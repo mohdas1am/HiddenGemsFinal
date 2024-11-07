@@ -1,0 +1,228 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>HiddenGems - Artisan Post</title>
+  <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.2/css/all.min.css">
+  <link href="https://fonts.googleapis.com/css2?family=Roboto:wght@400;500;700&display=swap" rel="stylesheet">
+  <style>
+    /* Color Variables */
+    :root {
+      --primary-orange: #f77f00;
+      --primary-red: #d62828;
+      --light-beige: #f9f6f0;
+      --background-white: #ffff;
+      --light-gray: rgba(0, 0, 0, 0.05);
+    }
+
+    * {
+      margin: 0;
+      padding: 0;
+      box-sizing: border-box;
+      font-family: 'Roboto', sans-serif;
+    }
+
+    body {
+      background-color: var(--background-white);
+      min-height: 100vh;
+      display: flex;
+      justify-content: center;
+      align-items: center;
+      padding: 20px;
+    }
+
+    .back-btn {
+      position: absolute;
+      top: 20px;
+      left: 20px;
+      background-color: var(--light-gray);
+      border: none;
+      padding: 10px;
+      border-radius: 50%;
+      cursor: pointer;
+      font-size: 20px;
+      transition: background-color 0.3s, transform 0.2s;
+    }
+
+    .back-btn:hover {
+      background-color: var(--primary-orange);
+      transform: scale(1.1);
+    }
+
+    .post-container {
+      display: flex;
+      width: 800px; /* Fixed width similar to Pinterest layout */
+      max-width: 90%; /* Adjust for smaller screens */
+      height: auto; /* Dynamically adjusts based on content */
+      border-radius: 15px;
+      box-shadow: 0px 4px 12px rgba(0, 0, 0, 0.2);
+      overflow: hidden;
+      background-color: var(--light-beige);
+      transition: transform 0.3s, box-shadow 0.3s ease;
+    }
+
+    .post-container:hover {
+      box-shadow: 0px 8px 20px rgba(0, 0, 0, 0.3);
+      transform: scale(1.02);
+    }
+
+    .post-image {
+      width: 50%; /* Image takes 50% of the container */
+      display: flex;
+      align-items: center;
+    }
+
+    .post-image img {
+      max-width: 100%;
+      max-height: 100%;
+      object-fit: contain;
+    }
+
+    .post-content {
+      width: 50%; /* Content takes the remaining 50% */
+      padding: 25px;
+      display: flex;
+      flex-direction: column;
+      justify-content: center; /* Center vertically */
+      overflow-y: auto;
+      max-height: 600px; /* Set max height for scroll behavior */
+    }
+
+    .post-content::-webkit-scrollbar {
+      width: 8px;
+    }
+
+    .post-content::-webkit-scrollbar-thumb {
+      background-color: var(--primary-orange);
+      border-radius: 4px;
+    }
+
+    .post-title {
+      font-size: 24px;
+      font-weight: 700;
+      margin-bottom: 15px;
+    }
+
+    .post-description {
+      font-size: 16px;
+      margin-bottom: 20px;
+      line-height: 1.6;
+    }
+
+    .post-meta {
+      display: flex;
+      justify-content: space-between;
+      align-items: center;
+      margin-top: auto;
+    }
+
+    .post-artist a {
+      color: var(--primary-orange);
+      text-decoration: none;
+      font-weight: 700;
+      font-size: 18px;
+      transition: color 0.3s;
+    }
+
+    .post-artist a:hover {
+      color: var(--primary-red);
+    }
+
+    .save-btn {
+      background-color: var(--primary-orange);
+      color: white;
+      border: none;
+      padding: 10px 25px;
+      border-radius: 20px;
+      cursor: pointer;
+      transition: background-color 0.3s ease;
+      align-self: flex-start; /* Align to the start */
+    }
+
+    .save-btn:hover {
+      background-color: var(--primary-red);
+    }
+
+    .saved {
+      background-color: var(--light-gray);
+      color: black;
+      cursor: default;
+    }
+  </style>
+</head>
+<body>
+
+<button class="back-btn">
+  <i class="fas fa-arrow-left"></i>
+</button>
+
+<div class="post-container">
+  <div class="post-image">
+    <img id="post-image" src="" alt="Artisan's Art Showcase">
+  </div>
+
+  <div class="post-content">
+    <h2 class="post-title" id="post-title">Loading...</h2>
+    <p class="post-description" id="post-description">Loading...</p>
+
+    <div class="post-meta">
+      <span class="post-artist" id="post-artist">By <a href="#" id="artist-link">Artist Name</a></span>
+      <button class="save-btn" id="save-btn">Save</button>
+    </div>
+  </div>
+</div>
+
+<script>
+  // Back button functionality
+  const backButton = document.querySelector('.back-btn');
+  backButton.addEventListener('click', () => {
+    window.history.back(); // Go back to the previous page
+  });
+
+  // Function to fetch photo details based on ID from URL
+  const fetchPhotoDetails = async () => {
+    const params = new URLSearchParams(window.location.search);
+    const id = params.get('id'); // Get the ID from the URL
+
+    if (!id) {
+      document.getElementById('post-title').innerText = 'No photo ID provided.';
+      return;
+    }
+
+    try {
+      const response = await fetch(/photos/${id}); // Fetch photo details
+
+      if (!response.ok) {
+        throw new Error('Photo not found');
+      }
+
+      const htmlResponse = await response.text(); // Convert response to HTML
+      document.querySelector('.post-container').innerHTML = htmlResponse; // Display the details
+    } catch (error) {
+      document.getElementById('post-description').innerText = 'Error fetching photo details: ' + error.message;
+    }
+  };
+
+  // Save button with local storage
+  const saveButton = document.getElementById('save-btn');
+
+  if (localStorage.getItem('postSaved')) {
+    saveButton.textContent = 'Saved';
+    saveButton.classList.add('saved');
+    saveButton.disabled = true;
+  }
+
+  saveButton.addEventListener('click', () => {
+    localStorage.setItem('postSaved', true);
+    saveButton.textContent = 'Saved';
+    saveButton.classList.add('saved');
+    saveButton.disabled = true;
+    alert('This post has been saved!');
+  });
+
+  fetchPhotoDetails(); // Fetch details on load
+</script>
+
+</body>
+</html>

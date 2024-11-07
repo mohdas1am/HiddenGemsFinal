@@ -1,0 +1,906 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>User Login and Registration</title>
+    <!-- Google Fonts -->
+    <link href="https://fonts.googleapis.com/css2?family=Roboto:wght@400;500&family=Playfair+Display:wght@600&display=swap" rel="stylesheet">
+    <style>
+        /* General Reset */
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+        }
+
+        body {
+            font-family: 'Roboto', sans-serif;
+            background: linear-gradient(135deg, #000428, #004e92);
+            display: flex;
+            justify-content: center;
+            align-items: center;
+            height: 100vh;
+            color: #fff;
+        }
+
+        .container {
+            width: 380px;
+            background-color: rgba(255, 255, 255, 0.1);
+            padding: 25px;
+            border-radius: 12px;
+            box-shadow: 0 4px 30px rgba(0, 0, 0, 0.5);
+            backdrop-filter: blur(10px);
+            border: 1px solid rgba(255, 255, 255, 0.3);
+        }
+
+        h2 {
+            text-align: center;
+            font-family: 'Playfair Display', serif;
+            margin-bottom: 20px;
+            color: #ffd700;
+            font-size: 28px;
+            letter-spacing: 1px;
+        }
+
+        form {
+            display: flex;
+            flex-direction: column;
+        }
+
+        input {
+            padding: 12px;
+            margin: 10px 0;
+            border-radius: 8px;
+            border: 2px solid #ffd700;
+            background-color: rgba(255, 255, 255, 0.1);
+            color: #fff;
+            outline: none;
+            font-size: 16px;
+            transition: border-color 0.3s ease;
+        }
+
+        input:focus {
+            border-color: #fff;
+        }
+
+        .login-btn, .register-btn {
+            padding: 12px;
+            margin-top: 15px;
+            background-color: #ffd700;
+            color: #000;
+            font-weight: bold;
+            font-size: 16px;
+            cursor: pointer;
+            border-radius: 8px;
+            transition: background-color 0.3s ease;
+            border: none;
+        }
+
+        .login-btn:hover, .register-btn:hover {
+            background-color: #ffc107;
+        }
+
+        .switch-btn {
+            text-align: center;
+            margin-top: 15px;
+            cursor: pointer;
+            color: #ffd700;
+        }
+
+        .hidden {
+            display: none;
+        }
+
+        .switch-btn:hover {
+            text-decoration: underline;
+        }
+
+        .form-title {
+            margin-bottom: 15px;
+            font-weight: 500;
+            color: #fff;
+        }
+    </style>
+</head>
+<body>
+<div class="container">
+    <!-- Login Form -->
+    <div id="login-form">
+        <h2>User Login</h2>
+        <form action="/user/login" method="GET" id="loginForm">
+            <label class="form-title" for="login-username">Username</label>
+            <input type="text" id="login-username" name="user_username" placeholder="Enter your username" required>
+
+            <label class="form-title" for="login-password">Password</label>
+            <input type="password" id="login-password" name="password" placeholder="Enter your password" required>
+
+            <button type="submit" class="login-btn">Login</button>
+        </form>
+        <p class="switch-btn" onclick="toggleForms()">New User? Register here</p>
+    </div>
+
+    <!-- Registration Form -->
+    <div id="register-form" class="hidden">
+        <h2>User Registration</h2>
+        <form action="/user/register" method="POST" id="registerForm">
+            <label class="form-title" for="register-username">Username</label>
+            <input type="text" id="register-username" name="user_username" placeholder="Choose a username" required>
+
+            <label class="form-title" for="register-email">Email</label>
+            <input type="email" id="register-email" name="email" placeholder="Enter your email" required>
+
+            <label class="form-title" for="register-fname">First Name</label>
+            <input type="text" id="register-fname" name="fname" placeholder="Enter your first name" required>
+
+            <label class="form-title" for="register-lname">Last Name</label>
+            <input type="text" id="register-lname" name="lname" placeholder="Enter your last name" required>
+
+            <label class="form-title" for="register-password">Password</label>
+            <input type="password" id="register-password" name="password" placeholder="Create a password" required>
+
+            <label class="form-title" for="register-location">Location</label>
+            <input type="text" id="register-location" name="location" placeholder="Enter your location" required>
+
+            <button type="submit" class="register-btn">Register</button>
+        </form>
+        <p class="switch-btn" onclick="toggleForms()">Already registered? Login here</p>
+    </div>
+</div>
+
+<script>
+    function toggleForms() {
+        const loginForm = document.getElementById('login-form');
+        const registerForm = document.getElementById('register-form');
+        loginForm.classList.toggle('hidden');
+        registerForm.classList.toggle('hidden');
+    }
+
+    document.getElementById('loginForm').onsubmit = function(event) {
+        event.preventDefault();
+        const username = document.getElementById('login-username').value;
+        const password = document.getElementById('login-password').value;
+        const url = `/user/login/${username}/${password}`;
+        fetch(url)
+            .then(response => response.text())
+            .then(data => alert(data));
+    };
+
+    document.getElementById('registerForm').onsubmit = function(event) {
+        event.preventDefault();
+        const formData = {
+            user_username: document.getElementById('register-username').value,
+            email: document.getElementById('register-email').value,
+            fname: document.getElementById('register-fname').value,
+            lname: document.getElementById('register-lname').value,
+            password: document.getElementById('register-password').value,
+            location: document.getElementById('register-location').value
+        };
+
+        fetch('/user/register', {
+            method: 'POST',
+            headers: {
+                'Content-Type': 'application/json'
+            },
+            body: JSON.stringify(formData)
+        })
+        .then(response => response.text())
+        .then(data => alert(data));
+    };
+</script>
+</body>
+</html>
+
+
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>User Login and Registration</title>
+    <!-- Google Fonts -->
+    <link href="https://fonts.googleapis.com/css2?family=Roboto:wght@400;500&family=Playfair+Display:wght@600&display=swap" rel="stylesheet">
+    <style>
+        /* General Reset */
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+        }
+
+        body {
+            font-family: 'Roboto', sans-serif;
+            background: linear-gradient(135deg, #000428, #004e92);
+            display: flex;
+            justify-content: center;
+            align-items: center;
+            height: 100vh;
+            color: #fff;
+        }
+
+        .container {
+            width: 380px;
+            background-color: rgba(255, 255, 255, 0.1);
+            padding: 25px;
+            border-radius: 12px;
+            box-shadow: 0 4px 30px rgba(0, 0, 0, 0.5);
+            backdrop-filter: blur(10px);
+            border: 1px solid rgba(255, 255, 255, 0.3);
+        }
+
+        h2 {
+            text-align: center;
+            font-family: 'Playfair Display', serif;
+            margin-bottom: 20px;
+            color: #ffd700;
+            font-size: 28px;
+            letter-spacing: 1px;
+        }
+
+        form {
+            display: flex;
+            flex-direction: column;
+        }
+
+        input {
+            padding: 12px;
+            margin: 10px 0;
+            border-radius: 8px;
+            border: 2px solid #ffd700;
+            background-color: rgba(255, 255, 255, 0.1);
+            color: #fff;
+            outline: none;
+            font-size: 16px;
+            transition: border-color 0.3s ease;
+        }
+
+        input:focus {
+            border-color: #fff;
+        }
+
+        .login-btn, .register-btn {
+            padding: 12px;
+            margin-top: 15px;
+            background-color: #ffd700;
+            color: #000;
+            font-weight: bold;
+            font-size: 16px;
+            cursor: pointer;
+            border-radius: 8px;
+            transition: background-color 0.3s ease;
+            border: none;
+        }
+
+        .login-btn:hover, .register-btn:hover {
+            background-color: #ffc107;
+        }
+
+        .switch-btn {
+            text-align: center;
+            margin-top: 15px;
+            cursor: pointer;
+            color: #ffd700;
+        }
+
+        .hidden {
+            display: none;
+        }
+
+        .switch-btn:hover {
+            text-decoration: underline;
+        }
+
+        .form-title {
+            margin-bottom: 15px;
+            font-weight: 500;
+            color: #fff;
+        }
+    </style>
+</head>
+<body>
+<div class="container">
+    <!-- Login Form -->
+    <div id="login-form">
+        <h2>User Login</h2>
+        <form action="/user/login" method="GET" id="loginForm">
+            <label class="form-title" for="login-username">Username</label>
+            <input type="text" id="login-username" name="user_username" placeholder="Enter your username" required>
+
+            <label class="form-title" for="login-password">Password</label>
+            <input type="password" id="login-password" name="password" placeholder="Enter your password" required>
+
+            <button type="submit" class="login-btn">Login</button>
+        </form>
+        <p class="switch-btn" onclick="toggleForms()">New User? Register here</p>
+    </div>
+
+    <!-- Registration Form -->
+    <div id="register-form" class="hidden">
+        <h2>User Registration</h2>
+        <form action="/user/register" method="POST" id="registerForm">
+            <label class="form-title" for="register-username">Username</label>
+            <input type="text" id="register-username" name="user_username" placeholder="Choose a username" required>
+
+            <label class="form-title" for="register-email">Email</label>
+            <input type="email" id="register-email" name="email" placeholder="Enter your email" required>
+
+            <label class="form-title" for="register-fname">First Name</label>
+            <input type="text" id="register-fname" name="fname" placeholder="Enter your first name" required>
+
+            <label class="form-title" for="register-lname">Last Name</label>
+            <input type="text" id="register-lname" name="lname" placeholder="Enter your last name" required>
+
+            <label class="form-title" for="register-password">Password</label>
+            <input type="password" id="register-password" name="password" placeholder="Create a password" required>
+
+            <label class="form-title" for="register-location">Location</label>
+            <input type="text" id="register-location" name="location" placeholder="Enter your location" required>
+
+            <button type="submit" class="register-btn">Register</button>
+        </form>
+        <p class="switch-btn" onclick="toggleForms()">Already registered? Login here</p>
+    </div>
+</div>
+
+<script>
+    function toggleForms() {
+        const loginForm = document.getElementById('login-form');
+        const registerForm = document.getElementById('register-form');
+        loginForm.classList.toggle('hidden');
+        registerForm.classList.toggle('hidden');
+    }
+
+    document.getElementById('loginForm').onsubmit = function(event) {
+        event.preventDefault();
+        const username = document.getElementById('login-username').value;
+        const password = document.getElementById('login-password').value;
+        const url = `/user/login/${username}/${password}`;
+        fetch(url)
+            .then(response => response.text())
+            .then(data => alert(data));
+    };
+
+    document.getElementById('registerForm').onsubmit = function(event) {
+        event.preventDefault();
+        const formData = {
+            user_username: document.getElementById('register-username').value,
+            email: document.getElementById('register-email').value,
+            fname: document.getElementById('register-fname').value,
+            lname: document.getElementById('register-lname').value,
+            password: document.getElementById('register-password').value,
+            location: document.getElementById('register-location').value
+        };
+
+        fetch('/user/register', {
+            method: 'POST',
+            headers: {
+                'Content-Type': 'application/json'
+            },
+            body: JSON.stringify(formData)
+        })
+        .then(response => response.text())
+        .then(data => alert(data));
+    };
+</script>
+</body>
+</html>
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>User Login and Registration</title>
+    <!-- Google Fonts -->
+    <link href="https://fonts.googleapis.com/css2?family=Roboto:wght@400;500&family=Playfair+Display:wght@600&display=swap" rel="stylesheet">
+    <style>
+        /* General Reset */
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+        }
+
+        body {
+            font-family: 'Roboto', sans-serif;
+            background: linear-gradient(135deg, #000428, #004e92);
+            display: flex;
+            justify-content: center;
+            align-items: center;
+            height: 100vh;
+            color: #fff;
+        }
+
+        .container {
+            width: 380px;
+            background-color: rgba(255, 255, 255, 0.1);
+            padding: 25px;
+            border-radius: 12px;
+            box-shadow: 0 4px 30px rgba(0, 0, 0, 0.5);
+            backdrop-filter: blur(10px);
+            border: 1px solid rgba(255, 255, 255, 0.3);
+        }
+
+        h2 {
+            text-align: center;
+            font-family: 'Playfair Display', serif;
+            margin-bottom: 20px;
+            color: #ffd700;
+            font-size: 28px;
+            letter-spacing: 1px;
+        }
+
+        form {
+            display: flex;
+            flex-direction: column;
+        }
+
+        input {
+            padding: 12px;
+            margin: 10px 0;
+            border-radius: 8px;
+            border: 2px solid #ffd700;
+            background-color: rgba(255, 255, 255, 0.1);
+            color: #fff;
+            outline: none;
+            font-size: 16px;
+            transition: border-color 0.3s ease;
+        }
+
+        input:focus {
+            border-color: #fff;
+        }
+
+        .login-btn, .register-btn {
+            padding: 12px;
+            margin-top: 15px;
+            background-color: #ffd700;
+            color: #000;
+            font-weight: bold;
+            font-size: 16px;
+            cursor: pointer;
+            border-radius: 8px;
+            transition: background-color 0.3s ease;
+            border: none;
+        }
+
+        .login-btn:hover, .register-btn:hover {
+            background-color: #ffc107;
+        }
+
+        .switch-btn {
+            text-align: center;
+            margin-top: 15px;
+            cursor: pointer;
+            color: #ffd700;
+        }
+
+        .hidden {
+            display: none;
+        }
+
+        .switch-btn:hover {
+            text-decoration: underline;
+        }
+
+        .form-title {
+            margin-bottom: 15px;
+            font-weight: 500;
+            color: #fff;
+        }
+    </style>
+</head>
+<body>
+<div class="container">
+    <!-- Login Form -->
+    <div id="login-form">
+        <h2>User Login</h2>
+        <form action="/user/login" method="GET" id="loginForm">
+            <label class="form-title" for="login-username">Username</label>
+            <input type="text" id="login-username" name="user_username" placeholder="Enter your username" required>
+
+            <label class="form-title" for="login-password">Password</label>
+            <input type="password" id="login-password" name="password" placeholder="Enter your password" required>
+
+            <button type="submit" class="login-btn">Login</button>
+        </form>
+        <p class="switch-btn" onclick="toggleForms()">New User? Register here</p>
+    </div>
+
+    <!-- Registration Form -->
+    <div id="register-form" class="hidden">
+        <h2>User Registration</h2>
+        <form action="/user/register" method="POST" id="registerForm">
+            <label class="form-title" for="register-username">Username</label>
+            <input type="text" id="register-username" name="user_username" placeholder="Choose a username" required>
+
+            <label class="form-title" for="register-email">Email</label>
+            <input type="email" id="register-email" name="email" placeholder="Enter your email" required>
+
+            <label class="form-title" for="register-fname">First Name</label>
+            <input type="text" id="register-fname" name="fname" placeholder="Enter your first name" required>
+
+            <label class="form-title" for="register-lname">Last Name</label>
+            <input type="text" id="register-lname" name="lname" placeholder="Enter your last name" required>
+
+            <label class="form-title" for="register-password">Password</label>
+            <input type="password" id="register-password" name="password" placeholder="Create a password" required>
+
+            <label class="form-title" for="register-location">Location</label>
+            <input type="text" id="register-location" name="location" placeholder="Enter your location" required>
+
+            <button type="submit" class="register-btn">Register</button>
+        </form>
+        <p class="switch-btn" onclick="toggleForms()">Already registered? Login here</p>
+    </div>
+</div>
+
+<script>
+    function toggleForms() {
+        const loginForm = document.getElementById('login-form');
+        const registerForm = document.getElementById('register-form');
+        loginForm.classList.toggle('hidden');
+        registerForm.classList.toggle('hidden');
+    }
+
+    document.getElementById('loginForm').onsubmit = function(event) {
+        event.preventDefault();
+        const username = document.getElementById('login-username').value;
+        const password = document.getElementById('login-password').value;
+        const url = `/user/login/${username}/${password}`;
+        fetch(url)
+            .then(response => response.text())
+            .then(data => alert(data));
+    };
+
+    document.getElementById('registerForm').onsubmit = function(event) {
+        event.preventDefault();
+        const formData = {
+            user_username: document.getElementById('register-username').value,
+            email: document.getElementById('register-email').value,
+            fname: document.getElementById('register-fname').value,
+            lname: document.getElementById('register-lname').value,
+            password: document.getElementById('register-password').value,
+            location: document.getElementById('register-location').value
+        };
+
+        fetch('/user/register', {
+            method: 'POST',
+            headers: {
+                'Content-Type': 'application/json'
+            },
+            body: JSON.stringify(formData)
+        })
+        .then(response => response.text())
+        .then(data => alert(data));
+    };
+</script>
+</body>
+</html>
+
+
+
+
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>User Login and Registration</title>
+    <link href="https://fonts.googleapis.com/css2?family=Roboto:wght@400;500&family=Playfair+Display:wght@600&display=swap" rel="stylesheet">
+    <style>
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+        }
+
+        body {
+            font-family: 'Roboto', sans-serif;
+            background: linear-gradient(135deg, #000428, #004e92);
+            display: flex;
+            justify-content: center;
+            align-items: center;
+            height: 100vh;
+            color: #fff;
+        }
+
+        .container {
+            width: 380px;
+            background-color: rgba(255, 255, 255, 0.1);
+            padding: 25px;
+            border-radius: 12px;
+            box-shadow: 0 4px 30px rgba(0, 0, 0, 0.5);
+            backdrop-filter: blur(10px);
+            border: 1px solid rgba(255, 255, 255, 0.3);
+        }
+
+        h2 {
+            text-align: center;
+            font-family: 'Playfair Display', serif;
+            margin-bottom: 20px;
+            color: #ffd700;
+            font-size: 28px;
+            letter-spacing: 1px;
+        }
+
+        form {
+            display: flex;
+            flex-direction: column;
+        }
+
+        input {
+            padding: 12px;
+            margin: 10px 0;
+            border-radius: 8px;
+            border: 2px solid #ffd700;
+            background-color: rgba(255, 255, 255, 0.1);
+            color: #fff;
+            outline: none;
+            font-size: 16px;
+            transition: border-color 0.3s ease;
+        }
+
+        input:focus {
+            border-color: #fff;
+        }
+
+        .login-btn, .register-btn {
+            padding: 12px;
+            margin-top: 15px;
+            background-color: #ffd700;
+            color: #000;
+            font-weight: bold;
+            font-size: 16px;
+            cursor: pointer;
+            border-radius: 8px;
+            transition: background-color 0.3s ease;
+            border: none;
+        }
+
+        .login-btn:hover, .register-btn:hover {
+            background-color: #ffc107;
+        }
+
+        .switch-btn {
+            text-align: center;
+            margin-top: 15px;
+            cursor: pointer;
+            color: #ffd700;
+        }
+
+        .hidden {
+            display: none;
+        }
+
+        .switch-btn:hover {
+            text-decoration: underline;
+        }
+
+        .form-title {
+            margin-bottom: 15px;
+            font-weight: 500;
+            color: #fff;
+        }
+
+        /* New Page After Login */
+        .main-page {
+            display: none;
+            width: 100%;
+            padding: 20px;
+        }
+
+        .main-header {
+            background-color: rgba(0, 0, 0, 0.7);
+            padding: 10px;
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+        }
+
+        .search-bar {
+            flex: 1;
+            margin-right: 10px;
+        }
+
+        .search-bar input {
+            padding: 8px;
+            width: 100%;
+            border-radius: 4px;
+            border: 1px solid #ffd700;
+            background-color: rgba(255, 255, 255, 0.1);
+            color: #fff;
+        }
+
+        .notification-bar {
+            color: #ffd700;
+            font-size: 16px;
+        }
+
+        .artisan-boxes {
+            display: flex;
+            flex-wrap: wrap;
+            justify-content: center;
+            margin-top: 20px;
+        }
+
+        .artisan-box {
+            background-color: rgba(255, 255, 255, 0.1);
+            border-radius: 8px;
+            padding: 15px;
+            margin: 10px;
+            width: 150px;
+            text-align: center;
+            color: #fff;
+            border: 1px solid rgba(255, 255, 255, 0.3);
+        }
+
+        .artisan-box:hover {
+            border-color: #ffd700;
+        }
+
+        .profile-icon {
+            cursor: pointer;
+            color: #ffd700;
+            font-size: 20px;
+        }
+    </style>
+</head>
+<body>
+<div class="container" id="auth-page">
+    <!-- Login Form -->
+    <div id="login-form">
+        <h2>User Login</h2>
+        <form action="/user/login" method="GET" id="loginForm">
+            <label class="form-title" for="login-username">Username</label>
+            <input type="text" id="login-username" name="user_username" placeholder="Enter your username" required>
+
+            <label class="form-title" for="login-password">Password</label>
+            <input type="password" id="login-password" name="password" placeholder="Enter your password" required>
+
+            <button type="submit" class="login-btn">Login</button>
+        </form>
+        <p class="switch-btn" onclick="toggleForms()">New User? Register here</p>
+    </div>
+
+    <!-- Registration Form -->
+    <div id="register-form" class="hidden">
+        <h2>User Registration</h2>
+        <form action="/user/register" method="POST" id="registerForm">
+            <label class="form-title" for="register-username">Username</label>
+            <input type="text" id="register-username" name="user_username" placeholder="Choose a username" required>
+
+            <label class="form-title" for="register-email">Email</label>
+            <input type="email" id="register-email" name="email" placeholder="Enter your email" required>
+
+            <label class="form-title" for="register-fname">First Name</label>
+            <input type="text" id="register-fname" name="fname" placeholder="Enter your first name" required>
+
+            <label class="form-title" for="register-lname">Last Name</label>
+            <input type="text" id="register-lname" name="lname" placeholder="Enter your last name" required>
+
+            <label class="form-title" for="register-password">Password</label>
+            <input type="password" id="register-password" name="password" placeholder="Create a password" required>
+
+            <label class="form-title" for="register-location">Location</label>
+            <input type="text" id="register-location" name="location" placeholder="Enter your location" required>
+
+            <button type="submit" class="register-btn">Register</button>
+        </form>
+        <p class="switch-btn" onclick="toggleForms()">Already registered? Login here</p>
+    </div>
+</div>
+
+<!-- Main Page (after login) -->
+<div class="main-page" id="main-page">
+    <div class="main-header">
+        <div class="search-bar">
+            <input type="text" placeholder="Search artisans..." oninput="filterArtisans(this.value)">
+        </div>
+        <div class="notification-bar">
+            Notifications
+        </div>
+        <div class="profile-icon" id="profile-icon" onclick="showUsername()">👤</div>
+    </div>
+
+    <div class="artisan-boxes" id="artisan-boxes">
+        <!-- Artisans will be dynamically added here -->
+    </div>
+</div>
+
+<script>
+    function toggleForms() {
+        const loginForm = document.getElementById('login-form');
+        const registerForm = document.getElementById('register-form');
+        loginForm.classList.toggle('hidden');
+        registerForm.classList.toggle('hidden');
+    }
+
+    // Handle login form submission
+    document.getElementById('loginForm').onsubmit = function(event) {
+        event.preventDefault();
+        const username = document.getElementById('login-username').value;
+        const password = document.getElementById('login-password').value;
+        const url = `/user/login/${username}/${password}`;
+        fetch(url)
+            .then(response => response.text())
+            .then(data => {
+                if (data.startsWith("Logged in")) {
+                    localStorage.setItem('username', username); // Store username in local storage
+                    showMainPage();
+                    loadArtisans();
+                } else {
+                    alert(data);  // Handle incorrect login
+                }
+            });
+    };
+
+    // Handle registration form submission
+    document.getElementById('registerForm').onsubmit = function(event) {
+        event.preventDefault();
+        const formData = {
+            user_username: document.getElementById('register-username').value,
+            email: document.getElementById('register-email').value,
+            fname: document.getElementById('register-fname').value,
+            lname: document.getElementById('register-lname').value,
+            password: document.getElementById('register-password').value,
+            location: document.getElementById('register-location').value
+        };
+        fetch('/user/register', {
+            method: 'POST',
+            headers: {
+                'Content-Type': 'application/json'
+            },
+            body: JSON.stringify(formData)
+        })
+        .then(response => response.text())
+        .then(data => {
+            alert(data);
+            if (data.includes("Registration successful")) {
+                toggleForms(); // Switch to login form after successful registration
+            }
+        });
+    };
+
+    function showMainPage() {
+        document.getElementById('auth-page').style.display = 'none';
+        document.getElementById('main-page').style.display = 'block';
+    }
+
+    function showUsername() {
+        const username = localStorage.getItem('username');
+        alert(`Logged in as: ${username}`);
+    }
+
+    function loadArtisans() {
+        // Fetch artisans from the database and display them
+        const artisans = [
+            { id: 1, name: 'Artisan 1' },
+            { id: 2, name: 'Artisan 2' },
+            { id: 3, name: 'Artisan 3' },
+            // Add more artisans as needed
+        ];
+
+        const artisanBoxes = document.getElementById('artisan-boxes');
+        artisanBoxes.innerHTML = ''; // Clear existing artisans
+
+        artisans.forEach(artisan => {
+            const box = document.createElement('div');
+            box.className = 'artisan-box';
+            box.innerText = artisan.name;
+            artisanBoxes.appendChild(box);
+        });
+    }
+
+    function filterArtisans(query) {
+        const boxes = document.querySelectorAll('.artisan-box');
+        boxes.forEach(box => {
+            if (box.innerText.toLowerCase().includes(query.toLowerCase())) {
+                box.style.display = 'block';
+            } else {
+                box.style.display = 'none';
+            }
+        });
+    }
+</script>
+</body>
+</html>

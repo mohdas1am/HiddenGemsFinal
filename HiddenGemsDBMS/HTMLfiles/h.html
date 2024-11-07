@@ -1,0 +1,325 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Admin Dashboard</title>
+    <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0-alpha1/dist/css/bootstrap.min.css" rel="stylesheet">
+    <style>
+        body {
+            background-color: #121212;
+            color: #e0e0e0;
+            font-family: 'Poppins', sans-serif;
+        }
+        .container {
+            margin-top: 50px;
+        }
+        h1 {
+            text-align: center;
+            margin-bottom: 30px;
+            color: #bb86fc;
+            font-size: 2.5rem;
+            font-weight: bold;
+        }
+        .nav-tabs .nav-link.active {
+            background-color: #bb86fc;
+            color: #121212;
+        }
+        .table {
+            margin-top: 20px;
+            background-color: #1f1f1f;
+            color: #e0e0e0;
+        }
+        .table th {
+            background-color: #333;
+            color: #e0e0e0;
+        }
+        .table tbody tr:hover {
+            background-color: #333;
+        }
+        .btn-login {
+            background-color: #bb86fc;
+            color: #121212;
+            border: none;
+            padding: 10px 20px;
+            cursor: pointer;
+            display: block;
+            margin: 0 auto;
+        }
+        .btn-login:hover {
+            background-color: #9e6cfe;
+        }
+        .delete-icon {
+            cursor: pointer;
+            color: #ff6f6f;
+            font-size: 1.2rem;
+            text-align: center;
+        }
+        .highlight {
+            background-color: #444444 !important;
+        }
+        .form-control {
+            border-radius: 5px;
+            background-color: #333;
+            color: #e0e0e0;
+            border: 1px solid #555;
+        }
+        .form-control:focus {
+            border-color: #bb86fc;
+            box-shadow: 0 0 0 0.2rem rgba(187, 134, 252, 0.25);
+        }
+        .login-box {
+            max-width: 400px;
+            margin: 0 auto;
+            background-color: #1f1f1f;
+            padding: 20px;
+            border-radius: 8px;
+            box-shadow: 0 4px 8px rgba(0, 0, 0, 0.3);
+        }
+
+        /* Fixed width for table columns */
+        .table th, .table td {
+            width: 150px;
+            white-space: nowrap;
+            text-overflow: ellipsis;
+            overflow: hidden;
+        }
+        .table th:nth-child(2),
+        .table td:nth-child(2),
+        .table th:nth-child(3),
+        .table td:nth-child(3) {
+            width: 180px; /* Increased width for first and last names */
+        }
+    </style>
+</head>
+<body>
+<div class="container">
+    <div class="login-box">
+        <h1>Admin Dashboard</h1>
+        <div id="loginSection">
+            <div class="mb-3">
+                <label for="admin_username" class="form-label">Admin Username</label>
+                <input type="text" class="form-control" id="admin_username" placeholder="Enter your username">
+            </div>
+            <div class="mb-3">
+                <label for="password" class="form-label">Password</label>
+                <input type="password" class="form-control" id="password" placeholder="Enter your password">
+            </div>
+            <button id="loginButton" class="btn-login">Login</button>
+            <p id="loginStatus" class="mt-3"></p>
+        </div>
+    </div>
+
+    <!-- Data Tabs -->
+    <div id="adminContent" style="display: none;">
+        <ul class="nav nav-tabs" id="adminTabs" role="tablist">
+            <li class="nav-item">
+                <a class="nav-link active" id="users-tab" data-bs-toggle="tab" href="#users" role="tab">Users</a>
+            </li>
+            <li class="nav-item">
+                <a class="nav-link" id="artisans-tab" data-bs-toggle="tab" href="#artisans" role="tab">Artisans</a>
+            </li>
+            <li class="nav-item">
+                <a class="nav-link" id="to-artisan-messages-tab" data-bs-toggle="tab" href="#to-artisan-messages" role="tab">Messages to Artisans</a>
+            </li>
+            <li class="nav-item">
+                <a class="nav-link" id="to-user-messages-tab" data-bs-toggle="tab" href="#to-user-messages" role="tab">Messages to Users</a>
+            </li>
+        </ul>
+        <div class="tab-content">
+            <!-- Users Table -->
+            <div class="tab-pane fade show active" id="users" role="tabpanel">
+                <table class="table table-bordered">
+                    <thead>
+                    <tr>
+                        <th>Username</th>
+                        <th>First Name</th>
+                        <th>Last Name</th>
+                        <th>Email</th>
+                        <th>Location</th>
+                        <th>Actions</th>
+                    </tr>
+                    </thead>
+                    <tbody id="usersTableBody"></tbody>
+                </table>
+            </div>
+            <!-- Artisans Table -->
+            <div class="tab-pane fade" id="artisans" role="tabpanel">
+                <table class="table table-bordered">
+                    <thead>
+                    <tr>
+                        <th>Username</th>
+                        <th>First Name</th>
+                        <th>Last Name</th>
+                        <th>Email</th>
+                        <th>Contact Number</th>
+                        <th>Work Type</th>
+                        <th>Location</th>
+                        <th>Actions</th>
+                    </tr>
+                    </thead>
+                    <tbody id="artisansTableBody"></tbody>
+                </table>
+            </div>
+            <!-- Messages to Artisans Table -->
+            <div class="tab-pane fade" id="to-artisan-messages" role="tabpanel">
+                <table class="table table-bordered">
+                    <thead>
+                    <tr>
+                        <th>Message ID</th>
+                        <th>Artisan ID</th>
+                        <th>User ID</th>
+                        <th>Content</th>
+                        <th>Timestamp</th>
+                    </tr>
+                    </thead>
+                    <tbody id="artisanMessagesTableBody"></tbody>
+                </table>
+            </div>
+            <!-- Messages to Users Table -->
+            <div class="tab-pane fade" id="to-user-messages" role="tabpanel">
+                <table class="table table-bordered">
+                    <thead>
+                    <tr>
+                        <th>Message ID</th>
+                        <th>User ID</th>
+                        <th>Artisan ID</th>
+                        <th>Content</th>
+                        <th>Timestamp</th>
+                    </tr>
+                    </thead>
+                    <tbody id="userMessagesTableBody"></tbody>
+                </table>
+            </div>
+
+        </div>
+    </div>
+</div>
+
+<script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0-alpha1/dist/js/bootstrap.bundle.min.js"></script>
+<script>
+    document.getElementById('loginButton').addEventListener('click', function () {
+        const adminUsername = document.getElementById('admin_username').value;
+        const password = document.getElementById('password').value;
+        const loginStatus = document.getElementById('loginStatus');
+
+        fetch(`/admin/login/${adminUsername}/${password}`)
+            .then(response => response.text())
+            .then(message => {
+                loginStatus.innerText = message;
+
+                if (message.includes("Logged in")) {
+                    document.getElementById('loginSection').style.display = 'none';
+                    document.getElementById('adminContent').style.display = 'block';
+
+                    fetchAllUsers();
+                    fetchAllArtisans();
+                    fetchAllMessagesToArtisans();
+                    fetchAllMessagesToUsers();
+                } else {
+                    loginStatus.style.color = "red";
+                }
+            })
+            .catch(error => {
+                loginStatus.innerText = "Login failed. Please try again.";
+            });
+    });
+
+    function fetchAllUsers() {
+        fetch('/admin/users')
+            .then(response => response.json())
+            .then(users => {
+                const usersTableBody = document.getElementById('usersTableBody');
+                usersTableBody.innerHTML = '';
+                users.forEach(user => {
+                    const row = `<tr id="user_${user.id}">
+                                    <td>${user.username}</td>
+                                    <td>${user.firstName}</td>
+                                    <td>${user.lastName}</td>
+                                    <td>${user.email}</td>
+                                    <td>${user.location}</td>
+                                    <td><span class="delete-icon" onclick="deleteUser(${user.id})">&times;</span></td>
+                                </tr>`;
+                    usersTableBody.innerHTML += row;
+                });
+            });
+    }
+
+    function fetchAllArtisans() {
+        fetch('/admin/artisans')
+            .then(response => response.json())
+            .then(artisans => {
+                const artisansTableBody = document.getElementById('artisansTableBody');
+                artisansTableBody.innerHTML = '';
+                artisans.forEach(artisan => {
+                    const row = `<tr id="artisan_${artisan.id}">
+                                    <td>${artisan.username}</td>
+                                    <td>${artisan.firstName}</td>
+                                    <td>${artisan.lastName}</td>
+                                    <td>${artisan.email}</td>
+                                    <td>${artisan.contactNumber}</td>
+                                    <td>${artisan.workType}</td>
+                                    <td>${artisan.location}</td>
+                                    <td><span class="delete-icon" onclick="deleteArtisan(${artisan.id})">&times;</span></td>
+                                </tr>`;
+                    artisansTableBody.innerHTML += row;
+                });
+            });
+    }
+
+    function fetchAllMessagesToArtisans() {
+        fetch('/admin/messages-to-artisans')
+            .then(response => response.json())
+            .then(messages => {
+                const messagesTableBody = document.getElementById('artisanMessagesTableBody');
+                messagesTableBody.innerHTML = '';
+                messages.forEach(message => {
+                    const row = `<tr id="message_to_artisan_${message.id}">
+                                    <td>${message.id}</td>
+                                    <td>${message.artisanId}</td>
+                                    <td>${message.userId}</td>
+                                    <td>${message.content}</td>
+                                    <td>${message.timestamp}</td>
+                                </tr>`;
+                    messagesTableBody.innerHTML += row;
+                });
+            });
+    }
+
+    function fetchAllMessagesToUsers() {
+        fetch('/admin/messages-to-users')
+            .then(response => response.json())
+            .then(messages => {
+                const messagesTableBody = document.getElementById('userMessagesTableBody');
+                messagesTableBody.innerHTML = '';
+                messages.forEach(message => {
+                    const row = `<tr id="message_to_user_${message.id}">
+                                    <td>${message.id}</td>
+                                    <td>${message.userId}</td>
+                                    <td>${message.artisanId}</td>
+                                    <td>${message.content}</td>
+                                    <td>${message.timestamp}</td>
+                                </tr>`;
+                    messagesTableBody.innerHTML += row;
+                });
+            });
+    }
+
+    function deleteUser(userId) {
+        fetch(`/admin/users/${userId}`, { method: 'DELETE' })
+            .then(response => response.text())
+            .then(message => {
+                document.getElementById(`user_${userId}`).remove();
+            });
+    }
+
+    function deleteArtisan(artisanId) {
+        fetch(`/admin/artisans/${artisanId}`, { method: 'DELETE' })
+            .then(response => response.text())
+            .then(message => {
+                document.getElementById(`artisan_${artisanId}`).remove();
+            });
+    }
+</script>
+</body>
+</html>

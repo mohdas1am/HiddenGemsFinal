@@ -1,0 +1,230 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <link
+            rel="stylesheet"
+            href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.2/css/all.min.css"
+            integrity="sha512-z3gLpd7yknf1YoNbCzqRKc4qyor8gaKU1qmn+CShxbuBusANI9QpRohGBreCFkKxLhei6S9CQXFEbbKuqLg0DA=="
+            crossorigin="anonymous"
+            referrerpolicy="no-referrer"
+    />
+    <title>HiddenGems</title>
+</head>
+<style>
+    * {
+      margin: 0;
+      padding: 0;
+      box-sizing: border-box;
+    }
+
+    body {
+      font-family: system-ui, -apple-system, sans-serif;
+      margin: 0;
+      padding: 0;
+      background-color: #ffff;
+    }
+
+    nav {
+      display: flex;
+      padding: 0px;
+      align-items: center;
+      gap: 10px;
+      position: fixed;
+      top: 0;
+      background: #fff;
+      left: 0;
+      right: 0;
+    }
+
+    nav a {
+      text-decoration: none;
+      color: #000;
+      font-weight: 600;
+      padding: 10px 15px;
+      border-radius: 20px;
+    }
+
+    nav a.active {
+      background: #d62828;
+      color: #ffffff;
+    }
+
+    nav a img {
+      height: 30px;
+      width: 30px;
+      border-radius: 50%;
+      object-fit: cover;
+    }
+
+    .logo img {
+      width: 90px;
+      height: max-content;
+      padding-top: 25px;
+    }
+
+    input {
+      width: 70%;
+      padding: 15px;
+      border-radius: 20px;
+      border: none;
+      outline: none;
+      background: #e9e9e9;
+      font-weight: 500;
+    }
+
+    a.icon {
+      font-size: 20px;
+      border-radius: 50px;
+    }
+
+    a.icon:hover {
+      background: #eae2b7;
+    }
+
+    #container {
+      display: flex;
+      flex-wrap: wrap;
+      margin-top: 150px;
+    }
+
+    .col {
+      height: auto;
+      width: calc(100% / 5);
+      display: flex;
+      flex-direction: column;
+      padding: 10px;
+      gap: 10px;
+    }
+
+    .card {
+      margin: 0;
+      width: 100%;
+    }
+
+    .card img {
+      width: 100%;
+      height: auto;
+      object-fit: contain;
+      border-radius: 20px;
+    }
+
+    #loader {
+      border: 4px solid #f3f3f3;
+      border-top: 4px solid #3fa9ef;
+      border-radius: 50%;
+      width: 30px;
+      height: 30px;
+      animation: spin 1s linear infinite;
+      margin: 20px auto;
+      margin-top: 100px;
+    }
+
+    @keyframes spin {
+      0% {
+        transform: rotate(0deg);
+      }
+
+      100% {
+        transform: rotate(360deg);
+      }
+    }
+
+    .dropdown {
+      position: relative; /* Position relative to enable absolute positioning of dropdown */
+    }
+
+    .dropdown-content {
+      display: none; /* Hidden by default */
+      position: absolute; /* Positioned relative to the dropdown */
+      background-color: #f9f9f9; /* Background color of the dropdown */
+      min-width: 160px; /* Minimum width of the dropdown */
+      box-shadow: 0px 8px 16px 0px rgba(0, 0, 0, 0.2); /* Shadow effect */
+      z-index: 1; /* Ensures dropdown is above other content */
+      padding-top: 5px;
+    }
+
+    .dropdown:hover .dropdown-content {
+      display: block; /* Show dropdown on hover */
+    }
+
+    .dropdown-content a {
+      color: black; /* Text color */
+      padding: 12px 16px; /* Padding around each item */
+      text-decoration: none; /* No underline */
+      display: block; /* Display as block to take full width */
+    }
+
+    .dropdown-content a:hover {
+      background-color: #f1f1f1; /* Change background on hover */
+    }
+</style>
+<body>
+<nav>
+    <a class="logo" href="#"><img src="logo.png" alt="" /></a>
+    <a href="#" class="active">Home</a>
+    <div class="dropdown">
+        <a href="#">Explore</a>
+        <div class="dropdown-content">
+            <a href="#">Painting</a>
+            <a href="#">Sculptures</a>
+            <a href="#">Textile</a>
+            <a href="#">Handicrafts</a>
+            <a href="#">Other</a>
+        </div>
+    </div>
+
+    <input type="text" class="search" placeholder="Search" />
+    <a href="#" class="icon"><i class="fas fa-bell"></i></a>
+    <a href="#" class="icon"><i class="fas fa-heart"></i></a>
+    <!--<a href="#" class="icon"><i class="fas fa-comment-dots"></i></a>-->
+    <a href="#" id="profile-link"><img src="profile.jpg" alt="" /></a>
+</nav>
+
+<div id="loader"></div>
+<div id="container">
+    <div class="col"></div>
+    <div class="col"></div>
+    <div class="col"></div>
+    <div class="col"></div>
+    <div class="col"></div>
+</div>
+<script>
+    document.addEventListener('DOMContentLoaded', () => {
+    const container = document.getElementById('container');
+    const cols = Array.from(container.getElementsByClassName('col'));
+
+    // Function to fetch all images
+    const fetchAllPhotos = async () => {
+        try {
+            const response = await fetch('/photos/all'); // Fetching all photos from the backend
+            const htmlResponse = await response.text(); // Convert response to HTML
+            displayImages(htmlResponse); // Display the fetched HTML in the page
+        } catch (error) {
+            console.error('Error fetching photos:', error);
+        }
+    };
+
+    // Function to display the images inside the container
+    const displayImages = (html) => {
+        // Create a temporary div to parse the HTML content
+        const tempDiv = document.createElement('div');
+        tempDiv.innerHTML = html;
+
+        // Select the divs with the images from the parsed HTML
+        const imageDivs = tempDiv.querySelectorAll('div');
+
+        // Iterate through the imageDivs and add them to the appropriate column
+        imageDivs.forEach((div, index) => {
+            const colIndex = index % cols.length; // Distribute images across columns
+            cols[colIndex].appendChild(div);
+        });
+    };
+
+    // Fetch the photos when the page loads
+    fetchAllPhotos();
+});
+</script>
+</body>
+</html>
